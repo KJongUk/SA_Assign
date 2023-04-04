@@ -24,9 +24,6 @@ class Model:
         
     def store(self, output):
         torch_model = self._get_models()
-        """
-        I 
-        """
         input_dummy = torch.empty(1, 3, 320, 320, dtype = torch.float32)
         if self.cuda:
             input_dummy = input_dummy.cuda()
@@ -37,13 +34,20 @@ class Model:
         if os.path.isdir(output):
             output+= self.model+".onnx"
 
+        dynamic_axes = {
+            'input' : {0: 'batch_size', 1: 'channel', 2: 'y', 3:'x'},
+            'output' : {0: 'batch_size'}
+        }
+        
         export(
             torch_model,
             input_dummy,
             output,
+            verbose=True,
             export_params = True,
             input_names = ['input'], 
-            output_names = ['cls_score','bbox_pred']
+            output_names = ['output'],
+            dynamic_axes = dynamic_axes
         )
         return 0
 
