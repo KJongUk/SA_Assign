@@ -1,9 +1,9 @@
 from argparse import ArgumentParser
 import torch
 import sys
+from utils.file import *
 from torchmodel.pretrained import *
 from onnxmodel.model import *
-from torchvision.models.detection import *
 
 class Command:
     def __init__(self):
@@ -15,7 +15,7 @@ class Command:
         self.parser.add_argument(
             '-m',
             "--mode",
-            dtype=int,
+            type=int,
             default=0,
             help="(0: store torch model as onnx format, 1: inference using onnx model)"
         )
@@ -23,7 +23,7 @@ class Command:
         self.parser.add_argument(
             '-c',
             "--cuda",
-            dtype=int,
+            type=int,
             default=0,
             help="(0: use cpu, 1: use gpu)"
         )
@@ -32,7 +32,7 @@ class Command:
         self.parser.add_argument(
             '-p',
             "--pretrained",
-            dtype=str,
+            type=str,
             default="fasterrcnn_resnet50_fpn",
             help="Pretrained models supported by pytorch (default: fasterrcnn_resnet50_fpn)"
         )
@@ -40,7 +40,7 @@ class Command:
         self.parser.add_argument(
             '-o',
             "--output",
-            dtype=str,
+            type=str,
             default="./",
             help="Directory path to store onnx model (default: ./)"
         )
@@ -49,13 +49,13 @@ class Command:
         self.parser.add_argument(
             '-f',
             "--file",
+            type=str,
             default=None,
             help="Path to onnx model for infference"
         )
         self.parser.add_argument(
             '-i',
             "--input",
-            dtype=str,
             default="../test",
             help="Path to images for inferrence of onnx model (default: ../test)"
         )
@@ -71,7 +71,8 @@ class Command:
                 os.makedirs(self.args.output)
             return Model(self.args.pretrained, use_cuda).store(self.args.output)
         elif self.args.mode == 1:
-            return Onnx_Model(self.args.file, use_cuda).run(self.args.input)
+            images = get_images(self.args.input)
+            return OnnxModel(self.args.file,use_cuda).run(images)
         else:
             """ undefined mode """
             return 126
@@ -80,7 +81,7 @@ def main(*argv) -> None:
     try:
         exit(Command().run())
     except Exception as e:
-        print(f"Error: {e.message}", file=sys.stderr)
+        print(f"Error: {e}", file=sys.stderr)
         exit(255)
 
 if __name__ == "__main__":
