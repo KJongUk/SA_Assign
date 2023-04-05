@@ -67,7 +67,7 @@ class Command:
             use_cuda = True
 
         if self.args.mode == 0:
-            if not os.path.exists(self.args.output) and os.path.isdir(self.args.output):
+            if not os.path.exists(self.args.output):
                 os.makedirs(self.args.output)
             return Model(self.args.pretrained, use_cuda).store(self.args.output)
         elif self.args.mode == 1:
