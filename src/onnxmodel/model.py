@@ -22,16 +22,14 @@ class OnnxModel:
         - resize: Input demension for ONNX model
         """
         #self.onnx_model = onnx.load(model)
-    
-
         self.session = onnxruntime.InferenceSession(
             model
         )
         self.labels = labels
         self.cuda = cuda
-        self.mode = self._get_model(model)
-        self.resize = MODEL_INPUT[self.mode]
-        self.model_res = MODEL_RES[self.mode]
+        self.model = self._get_model(model)
+        self.resize = MODEL_INPUT[self.model]
+        self.model_res = MODEL_RES[self.model]
 
     def run(self, images):
         """
@@ -56,8 +54,8 @@ class OnnxModel:
             imgs.append(img_)
             outs.append(out)
 
-        self._print_time(images, inference_times)
         self._draw_results(outs, imgs, images, inference_times)
+        self._print_time(images, inference_times)
         return 0
 
     def _preprocess(self,image):
@@ -92,6 +90,8 @@ class OnnxModel:
 
         for i, out in enumerate(outs):
             img = imgs[i]
+            w,h = img.size
+
             boxes = out[0].flatten()
 
             if self.model_res == 1:
@@ -104,14 +104,15 @@ class OnnxModel:
             fig, ax = plt.subplots(1, figsize=(12,9))
             ax.imshow(img)
 
+            s = "[{}] Inferrence Time: {:.4f}s".format(self.model, times[i])
             plt.title(
-                images[i].split('/')[-1],
+                s,
                 fontdict={
-                    'fontsize': 16,
+                    'fontsize': 14,
                     'fontweight': 'bold'
                 }
             )
-            plt.xlabel("Inference Time: xxxxs")
+            plt.text(w//2-75,h+15,images[i].split('/')[-1], fontsize=14, fontstyle="italic")
             for idx, score in enumerate(scores):
                 if score < 0.8:
                     continue
@@ -130,9 +131,7 @@ class OnnxModel:
         return
 
     def _print_time(self, images, inference_times):
-        """
-        """
-        print(f"Model: {self.mode}", file=sys.stdout)
+        print(f"Model: {self.model}", file=sys.stdout)
         for i, image in enumerate(images):
             name = image.split('/')[-1]
             print(f"Image File: {name}, "
