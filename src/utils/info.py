@@ -22,6 +22,18 @@ MODEL_INPUT = {
     "ssdlite320_mobilenet_v3_large": [320,320], 
 }
 
+MODEL_RES = {
+    "fcos_resnet50_fpn": 2, 
+    "fasterrcnn_mobilenet_v3_large_320_fpn": 1, 
+    "fasterrcnn_mobilenet_v3_large_fpn": 1, 
+    "fasterrcnn_resnet50_fpn_v2": 1, 
+    "fasterrcnn_resnet50_fpn": 1, 
+    "retinanet_resnet50_fpn_v2": 2, 
+    "retinanet_resnet50_fpn": 2, 
+    "ssd300_vgg16": 2, 
+    "ssdlite320_mobilenet_v3_large": 2, 
+}
+
 labels =[
     "__background__","person","bicycle","car","motorcycle",
     "airplane","bus","train","truck","boat","traffic light",
