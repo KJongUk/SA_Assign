@@ -22,14 +22,16 @@ class OnnxModel:
         - resize: Input demension for ONNX model
         """
         #self.onnx_model = onnx.load(model)
+    
+
         self.session = onnxruntime.InferenceSession(
-            model,
-            providers=["CUDAExecutionProvider", "CPUExecutionProvider"]
+            model
         )
         self.labels = labels
         self.cuda = cuda
-        self.resize = MODEL_INPUT[self._get_model(model)]
-        self.model_res = MODEL_RES[self._get_model(model)]
+        self.mode = self._get_model(model)
+        self.resize = MODEL_INPUT[self.mode]
+        self.model_res = MODEL_RES[self.mode]
 
     def run(self, images):
         """
@@ -54,8 +56,8 @@ class OnnxModel:
             imgs.append(img_)
             outs.append(out)
 
-        self._draw_results(outs, imgs, images, inference_times)
         self._print_time(images, inference_times)
+        self._draw_results(outs, imgs, images, inference_times)
         return 0
 
     def _preprocess(self,image):
@@ -71,6 +73,9 @@ class OnnxModel:
         return img_, img
 
     def _inference(self, img):
+        if self.cuda:
+            self.session.set_providers(['CUDAExecutionProvider'])
+
         ort_input = {self.session.get_inputs()[0].name: self._to_numpy(img)}
         ort_out = self.session.run(None, ort_input)
         return ort_out
@@ -108,6 +113,8 @@ class OnnxModel:
             )
             plt.xlabel("Inference Time: xxxxs")
             for idx, score in enumerate(scores):
+                if score < 0.8:
+                    continue
                 base_idx = idx*4
                 y1, x1, y2, x2 = boxes[base_idx:base_idx+4]
                 color = 'red'
@@ -125,6 +132,7 @@ class OnnxModel:
     def _print_time(self, images, inference_times):
         """
         """
+        print(f"Model: {self.mode}", file=sys.stdout)
         for i, image in enumerate(images):
             name = image.split('/')[-1]
             print(f"Image File: {name}, "
