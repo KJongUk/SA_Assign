@@ -13,58 +13,38 @@ ssd300_vgg16
 ssdlite320_mobilenet_v3_large
 "
 
-
 if [ $# -eq 0 ] ; then
-    echo -n "USAGE: ./run.sh (store|run|test)\n"
-    echo -n "-store: Convert pretrained pytorch model to onnx model\n"
-    echo -n "-run: Run object detection with onnx model\n"
-    echo -n "-test: Perform with provided settings\n"
+    echo "USAGE: ./run.sh (store|run|test)\n"
+    echo "-store: Convert pretrained pytorch model to onnx model\n"
+    echo "-run: Run object detection with onnx model\n"
+    echo "-test: Perform with provided settings\n"
     exit 0
 fi
 
-
 if [ ${1} = "store" ];then
     
-    echo "Pretrained Pytorch Model List:"
+    echo "Pretrained Pytorch Model List:\n"
     for model in $MODEL
     do
         echo "- "$model;
     done
-
-
-    echo -n "Enter Model: "
+    echo "Enter the Model selected from the list above: "
     read TORCH
-
-
-    echo -n "Enter Output Path for ONNX Model: "
+    echo "Enter Output Path for ONNX Model: "
     read OUTPUT
-
-
-    echo -n "Enter use GPU (y/n): "
+    echo "Use GPU (y/n)?: "
     read GPU
-
-
     USE=0
     if [ $GPU = "y" ];then
         USE=1
     fi
     python3 ./src/__main__.py -m 0 -c $USE -p $TORCH -o $OUTPUT
-
-
 elif [ ${1} = "run" ]; then
-
-
     BENCHMARK="./benchmarks"
-
-
-    echo -n "Enter ONNX Model: "
+    echo "Enter Path of ONNX Model: "
     read ONNX
-
-
-    echo -n "Enter use GPU (y/n): "
+    echo "Use GPU (y/n)?: "
     read GPU
-
-
     USE=0
     if [ $GPU = "y" ]; then
         USE=1
@@ -73,11 +53,7 @@ elif [ ${1} = "run" ]; then
 elif [ ${1} = "test" ]; then
     BENCHMARK="./benchmarks"
     ONNX="./onnx/fcos_resnet50_fpn.onnx"
-
-
     python3 ./src/__main__.py -m 1 -f $ONNX1 -i $BENCHMARK
-
-
 elif [ ${1} = "alltest" ]; then
     BENCHMARK="./benchmarks"
     ONNX1="./onnx/fcos_resnet50_fpn.onnx"
@@ -89,8 +65,6 @@ elif [ ${1} = "alltest" ]; then
     ONNX7="./onnx/retinanet_resnet50_fpn.onnx"
     ONNX8="./onnx/ssd300_vgg16.onnx"
     ONNX9="./onnx/ssdlite320_mobilenet_v3_large.onnx"
-
-
     python3 ./src/__main__.py -m 1 -f $ONNX1 -i $BENCHMARK
     echo "\n\n"
     python3 ./src/__main__.py -m 1 -f $ONNX2 -i $BENCHMARK
@@ -119,8 +93,6 @@ elif [ ${1} = "all" ]; then
     ONNX7="retinanet_resnet50_fpn"
     ONNX8="ssd300_vgg16"
     ONNX9="ssdlite320_mobilenet_v3_large"
-
-
     python3 ./src/__main__.py -m 0 -p $ONNX1 -o $BENCHMARK
     echo "\n\n"
     python3 ./src/__main__.py -m 0 -p $ONNX2 -o $BENCHMARK
@@ -138,13 +110,11 @@ elif [ ${1} = "all" ]; then
     python3 ./src/__main__.py -m 0 -p $ONNX8 -o $BENCHMARK
     echo "\n\n"
     python3 ./src/__main__.py -m 0 -p $ONNX9 -o $BENCHMARK
-
-
 else
-    echo -n "USAGE: ./run.sh (store|run|test)\n"
-    echo -n "-store: Convert pretrained pytorch model to onnx model\n"
-    echo -n "-run: Run object detection with onnx model\n"
-    echo -n "-test: Perform with provided settings\n"
-    exit 0
+   echo "USAGE: ./run.sh (store|run|test)\n"
+   echo "-store: Convert pretrained pytorch model to onnx model\n"
+   echo "-run: Run object detection with onnx model\n"
+   echo "-test: Perform with provided settings\n"
+   exit 0
 fi
 
