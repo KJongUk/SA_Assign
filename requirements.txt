@@ -1,0 +1,5 @@
+tqdm
+onnx
+onnxruntime
+opencv-python
+matplotlib
