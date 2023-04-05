@@ -52,7 +52,7 @@ elif [ ${1} = "run" ]; then
     python3 ./src/__main__.py -m 1 -c $USE -f $ONNX -i $BENCHMARK
 elif [ ${1} = "test" ]; then
     BENCHMARK="./benchmarks"
-    ONNX="./onnx/fcos_resnet50_fpn.onnx"
+    ONNX="./onnx/fasterrcnn_resnet50_fpn.onnx"
     python3 ./src/__main__.py -m 1 -f $ONNX1 -i $BENCHMARK
 elif [ ${1} = "alltest" ]; then
     BENCHMARK="./benchmarks"
