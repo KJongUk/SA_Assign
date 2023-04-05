@@ -22,11 +22,17 @@ class OnnxModel:
         - resize: Input demension for ONNX model
         """
         #self.onnx_model = onnx.load(model)
-        self.session = onnxruntime.InferenceSession(
-            model
-        )
+    
+        if cuda:
+            self.session = onnxruntime.InferenceSession(
+                model,
+                providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
+            )
+        else:
+            self.session = onnxruntime.InferenceSession(
+                model
+            )
         self.labels = labels
-        self.cuda = cuda
         self.model = self._get_model(model)
         self.resize = MODEL_INPUT[self.model]
         self.model_res = MODEL_RES[self.model]
@@ -36,7 +42,6 @@ class OnnxModel:
         Run ONNX model and Draw an image with bounding boxes.
         - (1) Inference with ONNX model.
         - (2) Print image with bounding box.
-        - (3) Print inference time each image.
         """
         inference_times = []
         imgs = []
@@ -47,6 +52,9 @@ class OnnxModel:
         for i in tqdm(range(total), desc="Obj Detection with Onnx Model"):
             img, img_ = self._preprocess(images[i])
             start = time.time()
+            """
+            Perform object detection with ONNX model
+            """
             out = self._inference(img)
             inference_time = time.time()-start
             
@@ -54,13 +62,23 @@ class OnnxModel:
             imgs.append(img_)
             outs.append(out)
 
+        """
+        Draw images with bounding boxes which are inferenced by ONNX model.
+        """
         self._draw_results(outs, imgs, images, inference_times)
         self._print_time(images, inference_times)
         return 0
 
     def _preprocess(self,image):
+        """
+        Preprocess an image to be used as input to ONNX model
+        """
         img = Image.open(image)
         if self.resize:
+            """
+            Only 320X320 images can be used as input 
+            for Pretrained model(ssdlite320_mobilenet_v3_large). 
+            """
             resize = transforms.Resize([320,320])
             img = resize(img)
         to_tensor = transforms.ToTensor()
@@ -71,9 +89,6 @@ class OnnxModel:
         return img_, img
 
     def _inference(self, img):
-        if self.cuda:
-            self.session.set_providers(['CUDAExecutionProvider'])
-
         ort_input = {self.session.get_inputs()[0].name: self._to_numpy(img)}
         ort_out = self.session.run(None, ort_input)
         return ort_out
@@ -82,7 +97,7 @@ class OnnxModel:
         return tensor.detach().cpu().numpy()
 
     def _get_model(self,model):
-        """ get model name """
+        """ Get model name """
         return (model.split('/')[-1]).split('.')[0]
 
     def _draw_results(self, outs, imgs, images, times):
@@ -104,15 +119,23 @@ class OnnxModel:
             fig, ax = plt.subplots(1, figsize=(12,9))
             ax.imshow(img)
 
+            """
+            Add inference time and file name to image
+            """
             s = "[{}] Inferrence Time: {:.4f}s".format(self.model, times[i])
             plt.title(
                 s,
                 fontdict={
-                    'fontsize': 14,
-                    'fontweight': 'bold'
+                    'size': 14,
+                    'weight': 'normal',
+                    'family': 'serif' 
                 }
             )
-            plt.text(w//2-75,h+15,images[i].split('/')[-1], fontsize=14, fontstyle="italic")
+            plt.text((w//2)-60,h+18,images[i].split('/')[-1], fontsize=14, fontstyle="italic")
+
+            """
+            Add bounding boxes to image
+            """ 
             for idx, score in enumerate(scores):
                 if score < 0.8:
                     continue
