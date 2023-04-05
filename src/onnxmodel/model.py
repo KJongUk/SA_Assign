@@ -23,12 +23,16 @@ class OnnxModel:
         """
         #self.onnx_model = onnx.load(model)
     
-
-        self.session = onnxruntime.InferenceSession(
-            model
-        )
+        if cuda:
+            self.session = onnxruntime.InferenceSession(
+                model,
+                providers=['CUDAExecutionProvider', 'CPUExecutionProvider']
+            )
+        else:
+            self.session = onnxruntime.InferenceSession(
+                model
+            )
         self.labels = labels
-        self.cuda = cuda
         self.mode = self._get_model(model)
         self.resize = MODEL_INPUT[self.mode]
         self.model_res = MODEL_RES[self.mode]
@@ -73,9 +77,6 @@ class OnnxModel:
         return img_, img
 
     def _inference(self, img):
-        if self.cuda:
-            self.session.set_providers(['CUDAExecutionProvider'])
-
         ort_input = {self.session.get_inputs()[0].name: self._to_numpy(img)}
         ort_out = self.session.run(None, ort_input)
         return ort_out
