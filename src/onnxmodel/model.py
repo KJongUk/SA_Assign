@@ -11,6 +11,7 @@ from tqdm import tqdm
 from PIL import Image
 from utils.info import *
 
+
 class OnnxModel:
     def __init__(self, model, cuda):
         """
@@ -28,6 +29,7 @@ class OnnxModel:
         self.labels = labels
         self.cuda = cuda
         self.resize = MODEL_INPUT[self._get_model(model)]
+        self.model_res = MODEL_RES[self._get_model(model)]
 
     def run(self, images):
         """
@@ -43,7 +45,7 @@ class OnnxModel:
         total = len(images)
 
         for i in tqdm(range(total), desc="Obj Detection with Onnx Model"):
-            img, img_ = self._preprocess(images[i]) 
+            img, img_ = self._preprocess(images[i])
             start = time.time()
             out = self._inference(img)
             inference_time = time.time()-start
@@ -51,7 +53,6 @@ class OnnxModel:
             inference_times.append(inference_time)
             imgs.append(img_)
             outs.append(out)
-
 
         self._draw_results(outs, imgs, images, inference_times)
         self._print_time(images, inference_times)
@@ -78,22 +79,28 @@ class OnnxModel:
         return tensor.detach().cpu().numpy()
 
     def _get_model(self,model):
+        """ get model name """
         return (model.split('/')[-1]).split('.')[0]
-
 
     def _draw_results(self, outs, imgs, images, times):
         plt.figure()
+
         for i, out in enumerate(outs):
             img = imgs[i]
             boxes = out[0].flatten()
-            res = out[1].flatten()    
-            scores = out[2].flatten()
+
+            if self.model_res == 1:
+                res = out[1].flatten()   
+                scores = out[2].flatten()
+            else:
+                res = out[2].flatten()   
+                scores = out[1].flatten()
 
             fig, ax = plt.subplots(1, figsize=(12,9))
             ax.imshow(img)
 
             plt.title(
-                images[i].split('/')[-1], 
+                images[i].split('/')[-1],
                 fontdict={
                     'fontsize': 16,
                     'fontweight': 'bold'
@@ -108,10 +115,11 @@ class OnnxModel:
                 box_w = (x2-x1)
                 bbox = patches.Rectangle((y1, x1), box_h, box_w, linewidth=2, edgecolor=color, facecolor='none')
                 ax.add_patch(bbox)
+                
                 label_text = "{} ({:0.2f})".format(self.labels[res[idx]], score)
                 plt.text(y1, x1, s=label_text, color='white', verticalalignment='top', bbox={'color': "red", 'pad': 0})
             plt.axis('off')
-        plt.show()  
+        plt.show() 
         return
 
     def _print_time(self, images, inference_times):
@@ -123,3 +131,4 @@ class OnnxModel:
                 f"inference-time: {inference_times[i]:.4f}s ",
                 file=sys.stdout)
         return
+
