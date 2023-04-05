@@ -4,6 +4,7 @@ from torchvision.models.detection import *
 from torch.onnx import export
 from utils.info import MODEL_WEIGHT
 
+
 """
 Pretrained Model List:
 - fcos_resnet50_fpn
@@ -17,6 +18,7 @@ Pretrained Model List:
 - ssdlite320_mobilenet_v3_large
 """
 
+
 class Model:
     def __init__(self, model, use_cuda=False):
         self.model = model
@@ -29,10 +31,13 @@ class Model:
             input_dummy = input_dummy.cuda()
             torch_model = torch_model.cuda()
 
+
         torch_model.eval()
 
+
         if os.path.isdir(output):
-            output+= self.model+".onnx"
+            output = os.path.join(output, self.model+".onnx")
+
 
         dynamic_axes = {
             'input' : {0: 'batch_size', 1: 'channel', 2: 'y', 3:'x'},
@@ -44,16 +49,18 @@ class Model:
             input_dummy,
             output,
             verbose=True,
+            opset_version=11,
             export_params = True,
-            input_names = ['input'], 
+            input_names = ['input'],
             output_names = ['output'],
             dynamic_axes = dynamic_axes
         )
         return 0
 
+
     def _get_models(self):
         """
         Use pretrained models with weight trained COCO dataset.
         """
-        weights = eval(MODEL_WEIGHT[self.model]).DEFAULT    
+        weights = eval(MODEL_WEIGHT[self.model]).DEFAULT
         return globals()[self.model](weights=weights, box_score_thresh=0.8)
