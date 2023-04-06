@@ -3,7 +3,6 @@
 # Pytorch Model List
 MODEL="
 fcos_resnet50_fpn
-fasterrcnn_mobilenet_v3_large_fpn
 fasterrcnn_resnet50_fpn_v2
 fasterrcnn_resnet50_fpn
 retinanet_resnet50_fpn_v2
@@ -56,7 +55,6 @@ elif [ ${1} = "test" ]; then
 elif [ ${1} = "alltest" ]; then
     BENCHMARK="./benchmarks"
     ONNX1="./onnx/fcos_resnet50_fpn.onnx"
-    ONNX3="./onnx/fasterrcnn_mobilenet_v3_large_fpn.onnx"
     ONNX4="./onnx/fasterrcnn_resnet50_fpn_v2.onnx"
     ONNX5="./onnx/fasterrcnn_resnet50_fpn.onnx"
     ONNX6="./onnx/retinanet_resnet50_fpn_v2.onnx"
@@ -64,8 +62,6 @@ elif [ ${1} = "alltest" ]; then
     ONNX8="./onnx/ssd300_vgg16.onnx"
     ONNX9="./onnx/ssdlite320_mobilenet_v3_large.onnx"
     python3 ./src/__main__.py -m 1 -f $ONNX1 -i $BENCHMARK
-    echo "\n\n"
-    python3 ./src/__main__.py -m 1 -f $ONNX3 -i $BENCHMARK
     echo "\n\n"
     python3 ./src/__main__.py -m 1 -f $ONNX4 -i $BENCHMARK
     echo "\n\n"
@@ -81,7 +77,6 @@ elif [ ${1} = "alltest" ]; then
 elif [ ${1} = "all" ]; then
     BENCHMARK="./onnx"
     ONNX1="fcos_resnet50_fpn"
-    ONNX3="fasterrcnn_mobilenet_v3_large_fpn"
     ONNX4="fasterrcnn_resnet50_fpn_v2"
     ONNX5="fasterrcnn_resnet50_fpn"
     ONNX6="retinanet_resnet50_fpn_v2"
@@ -89,8 +84,6 @@ elif [ ${1} = "all" ]; then
     ONNX8="ssd300_vgg16"
     ONNX9="ssdlite320_mobilenet_v3_large"
     python3 ./src/__main__.py -m 0 -p $ONNX1 -o $BENCHMARK
-    echo "\n\n"
-    python3 ./src/__main__.py -m 0 -p $ONNX3 -o $BENCHMARK
     echo "\n\n"
     python3 ./src/__main__.py -m 0 -p $ONNX4 -o $BENCHMARK
     echo "\n\n"
