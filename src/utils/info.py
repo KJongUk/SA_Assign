@@ -1,6 +1,5 @@
 MODEL_WEIGHT = {
     "fcos_resnet50_fpn": "FCOS_ResNet50_FPN_Weights", 
-    "fasterrcnn_mobilenet_v3_large_320_fpn": "FasterRCNN_MobileNet_V3_Large_320_FPN_Weights", 
     "fasterrcnn_mobilenet_v3_large_fpn": "FasterRCNN_MobileNet_V3_Large_FPN_Weights", 
     "fasterrcnn_resnet50_fpn_v2": "FasterRCNN_ResNet50_FPN_V2_Weights", 
     "fasterrcnn_resnet50_fpn": "FasterRCNN_ResNet50_FPN_Weights", 
@@ -12,7 +11,6 @@ MODEL_WEIGHT = {
 
 MODEL_INPUT = {
     "fcos_resnet50_fpn": None, 
-    "fasterrcnn_mobilenet_v3_large_320_fpn": None, 
     "fasterrcnn_mobilenet_v3_large_fpn": None, 
     "fasterrcnn_resnet50_fpn_v2": None, 
     "fasterrcnn_resnet50_fpn": None, 
@@ -24,7 +22,6 @@ MODEL_INPUT = {
 
 MODEL_RES = {
     "fcos_resnet50_fpn": 2, 
-    "fasterrcnn_mobilenet_v3_large_320_fpn": 1, 
     "fasterrcnn_mobilenet_v3_large_fpn": 1, 
     "fasterrcnn_resnet50_fpn_v2": 1, 
     "fasterrcnn_resnet50_fpn": 1, 
