@@ -40,13 +40,19 @@ def differential_testing(model_idx):
     """
 
     images = get_images(BENCHMARKS)
+    """
+    Get object detection result from ONNX and Pytorch
+    """
     onnx_results = OnnxModel(ONNX_MODELS[model_idx],0).test(images)
     torch_results = Model(MODELS[model_idx]).test(images)
     
     res = False
     for idx, onnx_res in enumerate(onnx_results):
         torch_res = torch_results[idx]
-        
+        """
+        Compare the results (labels, boxes, scores)
+        """
+
         torch_labels = torch_res["labels"].detach().numpy()
         onnx_labels = onnx_res[1]
         flag1 = compare_results(onnx_labels,torch_labels)
