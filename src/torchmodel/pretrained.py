@@ -1,10 +1,15 @@
-import os
+import os, sys
 import torch
 import onnx
 import onnx.numpy_helper as numpy_helper
 from onnx import shape_inference
 from torchvision.models.detection import *
 from torch.onnx import export
+from torchvision.io.image import read_image
+
+
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
 from utils.info import MODEL_WEIGHT
 from utils.file import *
 
@@ -123,3 +128,18 @@ class Model:
         """ Store shape information """
         onnx.save(onnx.shape_inference.infer_shapes(onnx.load(onnx_path)), onnx_path)
         return 0
+
+    def test(self, images):
+        weights = eval(MODEL_WEIGHT[self.model]).DEFAULT
+        torch_model =  globals()[self.model](weights=weights, box_score_thresh=0.8)
+        torch_model.eval()
+
+        preprocess = weights.transforms()
+        res = []
+        for image in images:
+            img = read_image(image)
+            batch = [preprocess(img)]
+            prediction = torch_model(batch)[0]
+            res.append(prediction)
+
+        return res

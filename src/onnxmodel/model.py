@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from tqdm import tqdm
 from PIL import Image
+
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
 from utils.info import *
 
 
@@ -162,3 +165,16 @@ class OnnxModel:
                 file=sys.stdout)
         return
 
+
+    def test(self, images):
+        outs = []
+
+        total = len(images)
+
+        for image in images:
+            img, img_ = self._preprocess(image)
+            out = self._inference(img)
+            
+            outs.append(out)
+
+        return outs
