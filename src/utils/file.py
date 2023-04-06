@@ -1,4 +1,5 @@
 import os 
+import numpy as np
 
 def get_images(path):
     images = []
@@ -7,3 +8,18 @@ def get_images(path):
             if file.split('.')[-1]=="jpg":
                 images.append(os.path.join(root,file))
     return images
+
+def compare_two_array(r, c, layer):
+    """
+    Compare ONNX model layer and Pytorch model layer
+    """
+    
+    f = False
+    try : 
+        np.testing.assert_allclose(r, c, rtol=1e-5, atol=0)
+        print(layer + ": no difference.")
+    except layer as msg:
+        print(layer + ": Error.")
+        print(msg)
+        f = True
+    return f
