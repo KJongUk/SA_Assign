@@ -30,12 +30,7 @@ if [ ${1} = "store" ];then
     read TORCH
     echo "Enter Output Path for ONNX Model: "
     read OUTPUT
-    echo "Use GPU (y/n)?: "
-    read GPU
     USE=0
-    if [ $GPU = "y" ];then
-        USE=1
-    fi
     python3 ./src/__main__.py -m 0 -c $USE -p $TORCH -o $OUTPUT
 elif [ ${1} = "run" ]; then
     BENCHMARK="./benchmarks"

@@ -21,17 +21,12 @@ Pretrained Model List:
 
 
 class Model:
-    def __init__(self, model, use_cuda=False):
+    def __init__(self, model):
         self.model = model
-        self.cuda = use_cuda
         
     def store(self, output):
         torch_model = self._get_models()
         input_dummy = torch.empty(1, 3, 320, 320, dtype = torch.float32)
-        if self.cuda:
-            input_dummy = input_dummy.cuda()
-            torch_model = torch_model.cuda()
-
 
         torch_model.eval()
 
