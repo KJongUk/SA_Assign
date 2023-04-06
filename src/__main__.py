@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 import torch
 import sys
+from utils.info import *
 from utils.file import *
 from torchmodel.pretrained import *
 from onnxmodel.model import *
@@ -67,10 +68,16 @@ class Command:
             use_cuda = True
 
         if self.args.mode == 0:
+            if not(self.args.pretrained in MODEL_WEIGHT):
+                raise ValueError("ERROE: Unsupported pretrained Model!!")
+
             if not os.path.exists(self.args.output):
                 os.makedirs(self.args.output)
             return Model(self.args.pretrained, use_cuda).store(self.args.output)
         elif self.args.mode == 1:
+            if not os.path.exists(self.args.file) or not os.path.exists(self.args.input):
+                raise ValueError("ERROR: File Path does not exist")
+
             images = get_images(self.args.input)
             return OnnxModel(self.args.file,use_cuda).run(images)
         else:
