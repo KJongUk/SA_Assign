@@ -2,9 +2,23 @@
 This repository contains a tool for running object detection using [ONNX model](https://onnx.ai/). It provides functions which transforms Pytorch pretrained model to ONNX format and which performs object detection using ONNX model.
 
 ## Installation
-* Install Python libraries below:
+* Requirements:
+- Python(>= 3.8)
+- Pytorch(>= 1.9)
+
+* Install Python libraries:
 ```bash
 pip install -r requirements.txt
+```
+
+If you want to use GPU, please install python library:
+```bash
+pip install onnxruntime-gpu
+```
+
+* Other libraries for OpenCV:
+```bash
+apt-get -y install libgl1-mesa-glx libglib2.0-0
 ```
 
 ## Usage
@@ -19,6 +33,4 @@ sh ./run.sh store
 ```bash
 sh ./run.sh run
 ```
-
-### Example
 
