@@ -73,7 +73,7 @@ class Command:
 
             if not os.path.exists(self.args.output):
                 os.makedirs(self.args.output)
-            return Model(self.args.pretrained, use_cuda).store(self.args.output)
+            return Model(self.args.pretrained).store(self.args.output)
         elif self.args.mode == 1:
             if not os.path.exists(self.args.file) or not os.path.exists(self.args.input):
                 raise ValueError("ERROR: File Path does not exist")
